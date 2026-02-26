@@ -1,0 +1,25 @@
+services:
+  rugscore-bot:
+    build: .
+    container_name: rugscore-bot
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      # Override DB path to use the mounted volume
+      DATABASE_URL: sqlite+aiosqlite:///db/rugscore.db
+    volumes:
+      - rugscore-db:/app/db
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "1.0"
+
+volumes:
+  rugscore-db:
+    name: rugscore-db

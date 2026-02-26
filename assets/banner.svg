@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 300" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f0f23;stop-opacity:1"/>
+      <stop offset="50%" style="stop-color:#1a1a3e;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#0d0d1f;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#9945FF"/>
+      <stop offset="50%" style="stop-color:#14F195"/>
+      <stop offset="100%" style="stop-color:#9945FF"/>
+    </linearGradient>
+    <linearGradient id="shield" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#14F195"/>
+      <stop offset="100%" style="stop-color:#9945FF"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="softglow">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="300" rx="16" fill="url(#bg)"/>
+
+  <!-- Subtle grid pattern -->
+  <g opacity="0.03">
+    <line x1="0" y1="0" x2="0" y2="300" stroke="white" stroke-width="1"/>
+    <line x1="60" y1="0" x2="60" y2="300" stroke="white" stroke-width="1"/>
+    <line x1="120" y1="0" x2="120" y2="300" stroke="white" stroke-width="1"/>
+    <line x1="180" y1="0" x2="180" y2="300" stroke="white" stroke-width="1"/>
+    <line x1="240" y1="0" x2="240" y2="300" stroke="white" stroke-width="1"/>
+    <line x1="300" y1="0" x2="300" y2="300" stroke="white" stroke-width="1"/>
+    <line x1="360" y1="0" x2="360" y2="300" stroke="white" stroke-width="1"/>
+    <line x1="420" y1="0" x2="420" y2="300" stroke="white" stroke-width="1"/>
+    <line x1="480" y1="0" x2="480" y2="300" stroke="white" stroke-width="1"/>
+    <line x1="540" y1="0" x2="540" y2="300" stroke="white" stroke-width="1"/>
+    <line x1="600" y1="0" x2="600" y2="300" stroke="white" stroke-width="1"/>
+    <line x1="660" y1="0" x2="660" y2="300" stroke="white" stroke-width="1"/>
+    <line x1="720" y1="0" x2="720" y2="300" stroke="white" stroke-width="1"/>
+    <line x1="780" y1="0" x2="780" y2="300" stroke="white" stroke-width="1"/>
+    <line x1="840" y1="0" x2="840" y2="300" stroke="white" stroke-width="1"/>
+    <line x1="900" y1="0" x2="900" y2="300" stroke="white" stroke-width="1"/>
+    <line x1="0" y1="60" x2="900" y2="60" stroke="white" stroke-width="1"/>
+    <line x1="0" y1="120" x2="900" y2="120" stroke="white" stroke-width="1"/>
+    <line x1="0" y1="180" x2="900" y2="180" stroke="white" stroke-width="1"/>
+    <line x1="0" y1="240" x2="900" y2="240" stroke="white" stroke-width="1"/>
+  </g>
+
+  <!-- Decorative orbs -->
+  <circle cx="750" cy="80" r="120" fill="#9945FF" opacity="0.06"/>
+  <circle cx="150" cy="220" r="100" fill="#14F195" opacity="0.05"/>
+
+  <!-- Top accent line -->
+  <rect x="0" y="0" width="900" height="3" rx="1.5" fill="url(#accent)"/>
+
+  <!-- Shield icon -->
+  <g transform="translate(100, 90)" filter="url(#glow)">
+    <path d="M60 0 L120 30 L120 75 C120 110 95 140 60 150 C25 140 0 110 0 75 L0 30 Z" fill="url(#shield)" opacity="0.9"/>
+    <path d="M60 20 L100 40 L100 75 C100 100 82 122 60 130 C38 122 20 100 20 75 L20 40 Z" fill="#0f0f23" opacity="0.7"/>
+    <text x="60" y="95" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="40" font-weight="bold" fill="#14F195">&#x2713;</text>
+  </g>
+
+  <!-- Title -->
+  <text x="280" y="120" font-family="system-ui, -apple-system, sans-serif" font-size="52" font-weight="800" fill="white" letter-spacing="-1">RugScore</text>
+
+  <!-- Subtitle -->
+  <text x="280" y="155" font-family="system-ui, -apple-system, sans-serif" font-size="18" fill="#a0a0c0" letter-spacing="0.5">Solana Anti-Rug Scanner</text>
+
+  <!-- Description -->
+  <text x="280" y="195" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#7070a0">8-criteria deep analysis &#183; Real-time on-chain data &#183; 100% free</text>
+
+  <!-- Tech badges -->
+  <g transform="translate(280, 215)">
+    <!-- Solana badge -->
+    <rect x="0" y="0" width="80" height="26" rx="4" fill="#9945FF" opacity="0.2"/>
+    <rect x="0" y="0" width="80" height="26" rx="4" fill="none" stroke="#9945FF" stroke-width="1" opacity="0.4"/>
+    <text x="40" y="17" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#9945FF" font-weight="600">Solana</text>
+
+    <!-- Telegram badge -->
+    <rect x="90" y="0" width="90" height="26" rx="4" fill="#26A5E4" opacity="0.2"/>
+    <rect x="90" y="0" width="90" height="26" rx="4" fill="none" stroke="#26A5E4" stroke-width="1" opacity="0.4"/>
+    <text x="135" y="17" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#26A5E4" font-weight="600">Telegram</text>
+
+    <!-- Python badge -->
+    <rect x="190" y="0" width="78" height="26" rx="4" fill="#3776AB" opacity="0.2"/>
+    <rect x="190" y="0" width="78" height="26" rx="4" fill="none" stroke="#3776AB" stroke-width="1" opacity="0.4"/>
+    <text x="229" y="17" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#3776AB" font-weight="600">Python</text>
+
+    <!-- Docker badge -->
+    <rect x="278" y="0" width="76" height="26" rx="4" fill="#2496ED" opacity="0.2"/>
+    <rect x="278" y="0" width="76" height="26" rx="4" fill="none" stroke="#2496ED" stroke-width="1" opacity="0.4"/>
+    <text x="316" y="17" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#2496ED" font-weight="600">Docker</text>
+  </g>
+
+  <!-- Score preview on right -->
+  <g transform="translate(700, 80)">
+    <rect x="0" y="0" width="140" height="140" rx="12" fill="white" opacity="0.04"/>
+    <rect x="0" y="0" width="140" height="140" rx="12" fill="none" stroke="white" stroke-width="1" opacity="0.08"/>
+    <text x="70" y="55" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#7070a0" font-weight="500" letter-spacing="2">SCORE</text>
+    <text x="70" y="100" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="48" font-weight="800" fill="#14F195" filter="url(#softglow)">87</text>
+    <text x="70" y="125" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#14F195" font-weight="600">SAFU</text>
+  </g>
+
+  <!-- Bottom accent line -->
+  <rect x="0" y="297" width="900" height="3" rx="1.5" fill="url(#accent)"/>
+
+  <!-- SoClose Society watermark -->
+  <text x="450" y="278" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#4a4a6a" letter-spacing="1">SoClose Society</text>
+</svg>
