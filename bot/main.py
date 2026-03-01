@@ -1,10 +1,4 @@
-"""Bot entry point — initialization, handler registration, startup."""
-
-import asyncio
-import logging
 import os
-import sys
-import time as _time
 
 # Ensure project root is in sys.path so all imports work
 # regardless of how the script is invoked (python bot/main.py, python -m bot.main, etc.)
@@ -74,7 +68,6 @@ def setup_logging():
     logging.getLogger("httpcore").setLevel(logging.WARNING)
     logging.getLogger("telegram").setLevel(logging.WARNING)
 
-
 async def _setup_bot_profile(application):
     """Configure bot profile for Telegram discoverability (SEO equivalent).
 
@@ -129,7 +122,6 @@ async def _setup_bot_profile(application):
 
     logger.info("Bot profile configured (description, bio, menu)")
 
-
 async def post_init(application):
     """Run after bot initialization — setup DB, cache, smart money list."""
     application.bot_data["start_time"] = _time.time()
@@ -144,180 +136,44 @@ async def post_init(application):
     cache.start_cleanup_task()
 
     # ─── Bot Profile: Description, Short Bio, Menu Button ───
-    # These are the Telegram "SEO" equivalents — what users see in search,
-    # before pressing Start, and when sharing the bot.
-    await _setup_bot_profile(application)
-
-    # Register PUBLIC commands in Telegram menu (visible to everyone in DMs)
-    public_commands = [
-        BotCommand("scan", "\U0001f50d Full degen scan"),
-        BotCommand("quick", "\u26a1 Speed check"),
-        BotCommand("wallet", "\U0001f4b0 Check a dev wallet"),
-        BotCommand("watch", "\U0001f440 Track a token"),
-        BotCommand("watchlist", "\U0001f4cb View tracked tokens"),
-        BotCommand("unwatch", "\u274c Stop tracking"),
-        BotCommand("trending", "\U0001f525 Hot tokens"),
-        BotCommand("myid", "\U0001f194 Show my Telegram ID"),
-        BotCommand("donate", "\U0001f4b8 Tip the devs"),
-        BotCommand("help", "\U0001f4d6 Full guide"),
-    ]
-    await application.bot.set_my_commands(public_commands)
-
-    # Register GROUP commands — subset visible in group command menu
-    group_commands = [
-        BotCommand("scan", "\U0001f50d Full degen scan"),
-        BotCommand("quick", "\u26a1 Speed check"),
-        BotCommand("wallet", "\U0001f4b0 Check a dev wallet"),
-        BotCommand("trending", "\U0001f525 Hot tokens"),
-        BotCommand("help", "\U0001f4d6 Full guide"),
-    ]
+    # These are the Telegram "SEO" equivalents — what users see in search results, forwards,
+    # and in the bot's "About" mini-profile. This is your meta description.
     try:
-        await application.bot.set_my_commands(
-            group_commands,
-            scope=BotCommandScopeAllGroupChats(),
-        )
-        logger.info("Group commands registered")
+        await _setup_bot_profile(application)
     except Exception as e:
-        logger.warning(f"Could not set group commands: {e}")
+        logger.warning(f"Could not set up bot profile: {e}")
 
-    # Register ADMIN commands (public + admin, visible only to admin users)
-    admin_commands = public_commands + [
-        BotCommand("settings", "\u2699\ufe0f Admin settings"),
-        BotCommand("stats", "\U0001f4ca Admin stats"),
-        BotCommand("broadcast", "\U0001f4e2 Broadcast message"),
-        BotCommand("health", "\U0001f3e5 Bot health"),
-        BotCommand("testreports", "\U0001f9ea Test channel reports"),
-    ]
-    for admin_id in settings.admin_id_set:
-        try:
-            await application.bot.set_my_commands(
-                admin_commands,
-                scope=BotCommandScopeChat(chat_id=admin_id),
-            )
-        except Exception as e:
-            logger.warning(f"Could not set admin commands for {admin_id}: {e}")
+    logger.info("Bot initialized")
 
-    logger.info(
-        f"Bot commands registered ({len(settings.admin_id_set)} admins)"
-    )
-
-    logger.info("RugScore Bot initialized successfully!")
-
-
-async def post_shutdown(application):
-    """Cleanup on shutdown."""
-    # Cancel all tracked background tasks
-    from bot.task_registry import cancel_all
-    await cancel_all()
-
+async def post_stop(application):
+    """Run after bot stops — clean up cache."""
     cache.stop_cleanup_task()
 
-    # Close HTTP clients
-    from data import solana_rpc, helius_client, dexscreener, jupiter, social_checker, rugcheck_client
-    await solana_rpc.close()
-    await helius_client.close()
-    await dexscreener.close()
-    await jupiter.close()
-    await social_checker.close()
-    await rugcheck_client.close()
-
-    logger.info("RugScore Bot shut down.")
-
+    logger.info("Bot stopped")
 
 def main():
-    """Start the bot."""
-    setup_logging()
+    application = Application.builder().token(settings.BOT_TOKEN).build()
 
-    # Startup validation
-    for warning in settings.validate_startup():
-        logger.warning(warning)
-    if not settings.telegram_bot_token:
-        logger.error("Cannot start without TELEGRAM_BOT_TOKEN!")
-        sys.exit(1)
+    # Add handlers
+    application.add_handler(CommandHandler('start', start_command))
+    application.add_handler(CommandHandler('help', help_command))
+    application.add_handler(CommandHandler('scan', scan_command))
+    application.add_handler(CommandHandler('quick', quick_command))
+    application.add_handler(CommandHandler('watch', watch_command))
+    application.add_handler(CommandHandler('unwatch', unwatch_command))
+    application.add_handler(CommandHandler('watchlist', watchlist_command))
+    application.add_handler(CommandHandler('trending', trending_command))
+    application.add_handler(CommandHandler('wallet', wallet_command))
+    application.add_handler(CommandHandler('settings', settings_command))
+    application.add_handler(CommandHandler('myid', myid_command))
+    application.add_handler(CommandHandler('broadcast', broadcast_command))
+    application.add_handler(CommandHandler('health', health_command))
+    application.add_handler(CommandHandler('testreports', testreports_command))
+    application.add_handler(CommandHandler('donate', donate_command))
+    application.add_handler(InlineQueryHandler(inline_query_handler))
 
-    logger.info("Starting RugScore Bot...")
+    # Start the bot
+    application.run_polling()
 
-    # Build the application
-    app = (
-        ApplicationBuilder()
-        .token(settings.telegram_bot_token)
-        .post_init(post_init)
-        .post_shutdown(post_shutdown)
-        .concurrent_updates(True)
-        .build()
-    )
-
-    # --- Register command handlers ---
-    app.add_handler(CommandHandler("start", start_command))
-    app.add_handler(CommandHandler("help", help_command))
-    app.add_handler(CommandHandler("scan", scan_command))
-    app.add_handler(CommandHandler("quick", quick_command))
-    app.add_handler(CommandHandler("watch", watch_command))
-    app.add_handler(CommandHandler("unwatch", unwatch_command))
-    app.add_handler(CommandHandler("watchlist", watchlist_command))
-    app.add_handler(CommandHandler("wallet", wallet_command))
-    app.add_handler(CommandHandler("trending", trending_command))
-    app.add_handler(CommandHandler("myid", myid_command))
-    app.add_handler(CommandHandler("donate", donate_command))
-    app.add_handler(CommandHandler("settings", settings_command))
-    app.add_handler(CommandHandler("stats", stats_command))
-    app.add_handler(CommandHandler("broadcast", broadcast_command))
-    app.add_handler(CommandHandler("health", health_command))
-    app.add_handler(CommandHandler("testreports", testreports_command))
-
-    # --- Register callback query handlers ---
-    # Regex requires 32-44 char base58 address after prefix to avoid collisions
-    app.add_handler(CallbackQueryHandler(callback_refresh, pattern=r"^refresh_[1-9A-HJ-NP-Za-km-z]{32,44}$"))
-    app.add_handler(CallbackQueryHandler(callback_scan, pattern=r"^scan_[1-9A-HJ-NP-Za-km-z]{32,44}$"))
-    app.add_handler(CallbackQueryHandler(callback_watch, pattern=r"^watch_[1-9A-HJ-NP-Za-km-z]{32,44}$"))
-    app.add_handler(CallbackQueryHandler(callback_dev_wallet, pattern=r"^dev_[1-9A-HJ-NP-Za-km-z]{32,44}$"))
-    app.add_handler(CallbackQueryHandler(callback_holders, pattern=r"^holders_[1-9A-HJ-NP-Za-km-z]{32,44}$"))
-    app.add_handler(CallbackQueryHandler(callback_refresh_watchlist, pattern=r"^refresh_watchlist$"))
-    app.add_handler(CallbackQueryHandler(callback_threshold, pattern=r"^threshold_\d+$"))
-    app.add_handler(CallbackQueryHandler(callback_admin, pattern=r"^admin_"))
-    app.add_handler(CallbackQueryHandler(
-        lambda u, c: u.callback_query.answer(), pattern=r"^settings_"
-    ))
-
-    # --- Inline mode: @YourBot <CA> in any chat ---
-    # Enables viral sharing — users can scan tokens inline in any conversation
-    app.add_handler(InlineQueryHandler(inline_query_handler))
-
-    # --- Auto-detect Solana addresses in messages (private chats only) ---
-    # In groups, auto-detect is disabled to prevent spam.
-    # Users must use /scan or /quick explicitly.
-    app.add_handler(MessageHandler(
-        filters.TEXT & ~filters.COMMAND & filters.ChatType.PRIVATE,
-        auto_detect_handler,
-    ))
-
-    # --- Schedule channel reports ---
-    if settings.channel_id:
-        jq = app.job_queue
-        jq.run_repeating(
-            post_trending_report,
-            interval=TRENDING_INTERVAL,
-            first=TRENDING_INTERVAL,
-            name="trending_report",
-        )
-        jq.run_repeating(
-            post_most_scanned_report,
-            interval=MOST_SCANNED_INTERVAL,
-            first=MOST_SCANNED_INTERVAL,
-            name="most_scanned_report",
-        )
-        logger.info(
-            f"Channel reports scheduled -> {settings.channel_id} "
-            f"(trending: {TRENDING_INTERVAL // 3600}h, "
-            f"scanned: {MOST_SCANNED_INTERVAL // 60}min)"
-        )
-    else:
-        logger.info("CHANNEL_ID not set — channel reports disabled")
-
-    # --- Start polling ---
-    logger.info("Bot is running! Press Ctrl+C to stop.")
-    app.run_polling(drop_pending_updates=True)
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
