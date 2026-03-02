@@ -22,6 +22,13 @@ from telegram.ext import (
     filters,
 )
 
+# Import environment variables for sensitive information
+import os
+DATABASE_URL = os.getenv('DATABASE_URL')
+if not DATABASE_URL:
+    raise ValueError('DATABASE_URL is not set in the environment')
+
+# Existing imports
 from config.settings import settings
 from database.db import init_db
 from data.cache import cache
