@@ -22,7 +22,8 @@ from telegram.ext import (
     filters,
 )
 
-from config.settings import settings
+import os
+from config.settings import get_admin_id_set
 from database.db import init_db
 from data.cache import cache
 from smart_money.wallet_list import load_from_db
@@ -149,6 +150,8 @@ async def post_init(application):
     await _setup_bot_profile(application)
 
     # Register PUBLIC commands in Telegram menu (visible to everyone in DMs)
+    admin_id_set = get_admin_id_set()
+
     public_commands = [
         BotCommand("scan", "\U0001f50d Full degen scan"),
         BotCommand("quick", "\u26a1 Speed check"),
@@ -188,7 +191,7 @@ async def post_init(application):
         BotCommand("health", "\U0001f3e5 Bot health"),
         BotCommand("testreports", "\U0001f9ea Test channel reports"),
     ]
-    for admin_id in settings.admin_id_set:
+    for admin_id in admin_id_set:
         try:
             await application.bot.set_my_commands(
                 admin_commands,
