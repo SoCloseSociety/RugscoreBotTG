@@ -22,10 +22,12 @@ from telegram.ext import (
     filters,
 )
 
-from config.settings import settings
-from database.db import init_db
-from data.cache import cache
-from smart_money.wallet_list import load_from_db
+import os
+from telegram.ext import ApplicationBuilder
+
+TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
+if not TELEGRAM_BOT_TOKEN:
+    raise ValueError('TELEGRAM_BOT_TOKEN environment variable is missing')
 
 # Handlers
 from bot.handlers.start import start_command, help_command
